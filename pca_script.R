@@ -12,4 +12,4 @@ pca_plot <- ggplot(scores, aes(x = PC1, y = PC2)) +
   labs(title = "PCA Plot of Your Dataset",
        x = "Principal Component 1",
        y = "Principal Component 2")
-ggsave("pca.png", width = 12, height = 8)
+ggsave("Figures/pca.png", width = 12, height = 8)
