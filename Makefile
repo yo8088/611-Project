@@ -10,4 +10,4 @@ tsne.png: youtube.csv tsne_script.R
 	Rscript tsne_script.R youtube.csv
 
 clean:
-	rm -f country.png category.png
+	rm -f country.png category.png tsne.png
