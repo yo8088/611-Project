@@ -11,4 +11,4 @@ tsne_data <- data.frame(X = tsne_result[, 1], Y = tsne_result[, 2])
 ggplot(tsne_data, aes(x = X, y = Y, color = factor(row.names(tsne_data)))) +
   geom_point() + 
   ggtitle("t-SNE Visualization")
-ggsave("tsne.png", width = 12, height = 8)
+ggsave("Figures/tsne.png", width = 12, height = 8)

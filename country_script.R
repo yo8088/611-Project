@@ -5,4 +5,4 @@ ggplot(youtube, aes(x = Country, fill = Country)) +
   labs(title = "Number of Channels by Country", xlab = "Country", ylab = "Number of Channels") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),  plot.background = element_rect(fill = "white"))
-ggsave("country.png", width = 12, height = 8)
+ggsave("Figures/country.png", width = 12, height = 8)
