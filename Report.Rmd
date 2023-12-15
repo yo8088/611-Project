@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-This dataset examines data from 995 YouTube channels and contains values for a variety of variables, such as a channel's number of uploads or its country of origin. We can categorize most of the dataset's variables into two categories: predictors of success (e.g. date of channel creation, education level of country of origin) or measurements of success (e.g. total views, highest yearly earnings). The high number of variables in the first category allows us to create highly detailed models for predicting the success of a channel, while the high number in the second category enables us to determine if our results are robust to different measures of success.
+This dataset examines data from 995 YouTube channels and contains values for a variety of variables, such as a channel's number of uploads or its country of origin. We can categorize most of the dataset's variables into two categories: predictors of video success (e.g. date of channel creation, education level of country of origin) or measurements of video success (e.g. total views, highest yearly earnings). The high number of variables in the first category allows us to examine highly detailed models for predicting the success of a channel, while the high number in the second category enables us to determine if our results are robust to different measures of success.
 
 
 ```{r}
