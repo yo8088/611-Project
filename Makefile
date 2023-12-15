@@ -1,16 +1,20 @@
-all: country.png category.png
+PHONY: clean
 
-country.png: youtube.csv country_script.R
+clean: 
+	rm -rf Figures
+
+.create-dir:
+	mkdir Figures
+
+Figures/country.png: youtube.csv country_script.R
 	Rscript country_script.R youtube.csv
 
-category.png: youtube.csv category_script.R
+Figures/category.png: youtube.csv category_script.R
 	Rscript category_script.R youtube.csv
 	
-tsne.png: youtube.csv tsne_script.R
+Figures/tsne.png: youtube.csv tsne_script.R
 	Rscript tsne_script.R youtube.csv
 	
-pca.png: youtube.csv pca_script.R
+Figures/pca.png: youtube.csv pca_script.R
 	Rscript pca_script.R youtube.csv
-
-clean:
-	rm -f country.png category.png tsne.png pca.png
+	
