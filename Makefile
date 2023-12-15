@@ -8,6 +8,9 @@ category.png: youtube.csv category_script.R
 	
 tsne.png: youtube.csv tsne_script.R
 	Rscript tsne_script.R youtube.csv
+	
+pca.png: youtube.csv pca_script.R
+	Rscript pca_script.R youtube.csv
 
 clean:
-	rm -f country.png category.png tsne.png
+	rm -f country.png category.png tsne.png pca.png
