@@ -3,7 +3,7 @@ PHONY: clean
 clean: 
 	rm -rf Figures
 
-all: .create-dir Figures/country.png Figures/category.png Figures/pca.png Figures/subs_views_cor.png
+all: .create-dir Figures/country.png Figures/category.png Figures/pca.png Figures/subs_views_cor.png Figures/year_views_cor.png
 
 .create-dir:
 	mkdir Figures
@@ -19,4 +19,6 @@ Figures/pca.png: youtube.csv pca_script.R
 	
 Figures/subs_views_cor.png: youtube.csv subs_views_cor_script.R
 	Rscript subs_views_cor_script.R youtube.csv
-	
+
+Figures/year_views_cor.png: youtube.csv year_views_cor_script.R
+	Rscript year_views_cor_script.R youtube.csv
