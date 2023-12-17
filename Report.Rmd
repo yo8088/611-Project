@@ -65,9 +65,6 @@ To ensure that our analysis is robust, we should examine the relationship of our
 ```{r}
 nonzero<- subset(channels_only, highest_yearly_earnings >= 1) #Remove values equal to zero, as they cannot be log transformed
 nonzero$log_highest_yearly_earnings<- log(nonzero$highest_yearly_earnings)
-ggplot(nonzero, aes(log_subscribers, log_highest_yearly_earnings)) +
-  geom_point(aes(color = video.views)) +
-  labs(x = "Log Subscribers", y = "Highest Log Yearly Earnings")
 ggplot(data = nonzero, aes(x = log_subscribers, y = log_highest_yearly_earnings, size = uploads)) +
   geom_point(alpha = 0.2, color = "red") +
   scale_size_continuous(range = c(3, 10))
