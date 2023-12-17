@@ -2,11 +2,18 @@ PHONY: clean
 
 clean: 
 	rm -rf Figures
+	rm -f Rplots.pdf
 
-all: .create-dir Figures/country.png Figures/category.png Figures/pca.png Figures/subs_views_cor.png Figures/year_views_cor.png
+all: .create-dir Figures/country.png Figures/category.png Figures/pca.png Figures/bubble.png Figures/urbanpop_views_cor.png Figures/earnings_bubble.png Figures/earnings_views_cor.png
 
 .create-dir:
 	mkdir Figures
+
+Figures/earnings_views_cor.png: youtube.csv earnings_views_cor_script.R
+	Rscript earnings_views_cor_script.R youtube.csv
+
+Figures/urbanpop_views_cor.png: youtube.csv urbanpop_views_cor_script.R
+	Rscript urbanpop_views_cor_script.R youtube.csv
 
 Figures/country.png: youtube.csv country_script.R
 	Rscript country_script.R youtube.csv
@@ -20,5 +27,5 @@ Figures/pca.png: youtube.csv pca_script.R
 Figures/bubble.png: youtube.csv bubble.R
 	Rscript bubble.R youtube.csv
 
-Figures/year_views_cor.png: youtube.csv year_views_cor_script.R
-	Rscript year_views_cor_script.R youtube.csv
+Figures/earnings_bubble.png: youtube.csv earnings_bubble_script.R
+	Rscript earnings_bubble_script.R youtube.csv
