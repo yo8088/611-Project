@@ -9,7 +9,7 @@ nonzero$norm_subscribers<- scale(nonzero$log_subscribers)
 nonzero$norm_video.views<- scale(nonzero$log_video.views)
 nonzero$sub_view_diff<- nonzero$norm_video.views - nonzero$norm_subscribers
 nonzero<- subset(nonzero, created_year > 2000)
-ggplot(nonzero, aes(created_year, log_subscribers)) +
+ggplot(nonzero, aes(Urban_population, video.views)) +
   geom_point(aes(color = video.views)) +
-  labs(x = "Created Year", y = "Log Subscribers")
-ggsave("Figures/year_views_cor.png", width = 12, height = 8)
+  labs(x = "Urban Population", y = "Video Views")
+ggsave("Figures/urbanpop_views_cor.png", width = 12, height = 8)
