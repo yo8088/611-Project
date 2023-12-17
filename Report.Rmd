@@ -94,7 +94,7 @@ pca_result <- prcomp(youtube_numeric, scale = TRUE)
 scores <- as.data.frame(pca_result$x[, 1:2])
 ggplot(scores, aes(x = PC1, y = PC2)) +
   geom_point() +
-  labs(title = "PCA Plot of Your Dataset",
+  labs(title = "PCA Plot",
        x = "Principal Component 1",
        y = "Principal Component 2")
 summary(pca_result)
@@ -116,6 +116,3 @@ summary(cluster3_data)
 
 Interestingly, we observe that channels appear to cluster by country. Cluster 1 (the one centered around (0, -3) is entirely composed of channels associated with India (although it does not include every channel associated with India). Cluster 2 (the one centered around (1.25, 0)) contains a high number of channels associated with Brazil, while cluster 3 is mostly comprised of channels associated with the United States.
 
-```{r}
-rmarkdown::render("Report.Rmd", output_format = "pdf_document")
-```
