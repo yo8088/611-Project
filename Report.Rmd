@@ -8,13 +8,117 @@ date: "2023-12-14"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Introduction
-
 This dataset examines data from 995 YouTube channels and contains values for a variety of variables, such as a channel's number of uploads or its country of origin. We can categorize most of the dataset's variables into two categories: predictors of video success (e.g. date of channel creation, education level of country of origin) or measurements of video success (e.g. total views, highest yearly earnings). The high number of variables in the first category allows us to examine highly detailed models for predicting the success of a channel, while the high number in the second category enables us to determine if our results are robust to different measures of success.
 
+First, we will do some exploratory data analysis. Here, I will plot a histogram of the number of channels by country and by channel category. Below, we plot the number of channels by category and by country (see produced figure in repository if this one is difficult to read).
 
 ```{r}
+library(ggplot2)
+youtube<- read.csv("~/Desktop/Global YouTube Statistics.csv")
+ggplot(youtube, aes(x = Country, fill = Country)) + 
+  geom_histogram(stat = "count") + 
+  labs(title = "Number of Channels by Country", xlab = "Country", ylab = "Number of Channels") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
+ggplot(youtube, aes(x = category, fill = category)) + 
+  geom_histogram(stat = "count") + 
+  labs(title = "Number of Channels by Channel Category", xlab = "Country", ylab = "Number of Channels") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
+Based on the first histogram, the most popular country of origin for YouTube channels in this dataset is the United States. India was the second most common source of YouTube channels, followed by Brazil and the UK.  Based on the second histogram, the most common channel categories are entertainment and music. A large number of channels do not have an associated country because they are Youtube's own channels. Although these channels are actually channels, unlike most of the other channels, they merely aggregate videos across various categories rather than creating their own videos. Aggregator channels are also missing values for variables such as "category", "Country", and "video.views".  Therefore, we will restrict our analysis to channels with a focus on creation.
 
+```{r}
+channels_only<- subset(youtube, video.views != 0)
+```
+
+Next, we will attempt to determine the impact of the urban population of a channel's home country on the number of views that channel receives. We create a scatterplot to examine the relationship between the urban population of a channel's associated country and video views.
+
+```{r}
+ggplot(channels_only,aes(Urban_population, video.views)) +
+  geom_point(aes(color = Urban_population)) +
+  labs(x = "Urban Population", y = "Video Views")
+cor(channels_only$Urban_population, channels_only$video.views, use = "complete.obs")
+```
+
+Although we do not observe a strong effect of urban population on video views, with countries showing mostly similar distributions regardless of urban population, we observe that the channels with the highest numbers of video views are almost exclusively created by channels that hail from countries with large urban populations. Thus, a country's urban population may not have any effect on the success of its channels unless those channels become extremely popular, in which case a high urban population may be modestly associated with more total video views.
+
+Other factors which could plausibly impact the overall success of a channel are its subscriber count and its total number of uploads. To illustrate the impact of these two factors simultaneously, we will create a bubble plot. We apply to a log transformation to the variables representing total video views and total subscribers due to the exponential growth rate typically associated with both.
+
+```{r}
+channels_only$log_video.views<- log(channels_only$video.views)
+channels_only$log_subscribers<- log(channels_only$subscribers)
+channels_only<- subset(channels_only, log_video.views > 15) #Remove outliers
+ggplot(data = channels_only, aes(x = log_subscribers, y = log_video.views, size = uploads)) +
+  geom_point(alpha = 0.2, color = "blue") +
+  scale_size_continuous(range = c(3, 10))
+cor(channels_only$log_subscribers, channels_only$log_video.views, use = "complete.obs")
+cor(channels_only$uploads, channels_only$log_video.views, use = "complete.obs")
+```
+
+Total number of subscribers and the total number of uploads seem to be positively correlated with channel success (as measured by the total number of video views), albeit to varying degrees. A channel's total number of uploads modestly predicted the total number of video views it received, possibly because a greater number of uploads gives a channel more opportunities to receive views. A channel's total number of subscribers was a substantially stronger predictor of the number of video views it received. There are two plausible (non-mutually exlusive) explanations: 1) channels which have more subscribers receive more views because more potential viewers are exposed to their content or 2) high viewership leads to a high number of subscriptions because people often subscribe to a channel after watching a video. 
+
+To ensure that our analysis is robust, we should examine the relationship of our predictors to a different measure of channel success, log transformed yearly earnings (specifically, the highest yearly earnings a channel has received). 
+
+```{r}
+nonzero<- subset(channels_only, highest_yearly_earnings >= 1) #Remove values equal to zero, as they cannot be log transformed
+nonzero$log_highest_yearly_earnings<- log(nonzero$highest_yearly_earnings)
+ggplot(nonzero, aes(log_subscribers, log_highest_yearly_earnings)) +
+  geom_point(aes(color = video.views)) +
+  labs(x = "Log Subscribers", y = "Highest Log Yearly Earnings")
+ggplot(data = nonzero, aes(x = log_subscribers, y = log_highest_yearly_earnings, size = uploads)) +
+  geom_point(alpha = 0.2, color = "red") +
+  scale_size_continuous(range = c(3, 10))
+cor(nonzero$uploads, nonzero$log_highest_yearly_earnings, use = "complete.obs")
+cor(nonzero$log_subscribers, nonzero$log_highest_yearly_earnings, use = "complete.obs")
+```
+
+We observe similar results when using the highest amount of log-transformed yearly earnings as our measure of channel success; therefore, our results are robust to different measures of channel success. However, the strength of the relationship between log-transformed subscriptions and log-tranformed yearly earnings is significantly lower than the strength of the one between log-transformed subscriptions and log-transformed video views. We might observe this effect because some channels may mostly contain high numbers of highly-watched videos that are unable to be monetized for various reasons (e.g. explicit content, copyright violations). To test this hypothesis, we will examine the relationship between log-transformed video views and the highest amount of log-transformed yearly earnings a channel has received.
+
+```{r}
+ggplot(nonzero, aes(log_video.views, log_highest_yearly_earnings)) +
+  geom_point(aes(color = log_highest_yearly_earnings)) +
+  labs(x = "Log Video Views", y = "Highest Log Yearly Earnings")
+```
+
+We observe a similar effect: a strong, positive, linear correlation between log transformed video views and log transformed yearly earnings for the majority of datapoints but a lack of correlation among channels which earn little compared to their peers. This effect provides further evidence that large-scale video demonetization creates the heterogeneous relationship between subscriptions and earnings.
+
+Finally, because many of our variables are related to each other, we will explore the possibility of dimemsionality reduction for our dataset. We conduct principal component analysis (PCA) on all numerical variables.
+
+```{r}
+channels_only<- subset(channels_only, select = -c(subscribers_for_last_30_days)) #Remove the "subscribers for last 30 days" variable, as it has many missing values
+channels_only<- channels_only[complete.cases(channels_only$country_rank), ] #Remove channels without an associated country
+youtube_numeric<- channels_only[sapply(channels_only, is.numeric)]
+youtube_numeric <- na.omit(youtube_numeric)
+youtube_numeric <- subset(youtube_numeric, select = -c(subscribers, video.views)) #Remove variables that were log transformed
+pca_result <- prcomp(youtube_numeric, scale = TRUE)
+scores <- as.data.frame(pca_result$x[, 1:2])
+ggplot(scores, aes(x = PC1, y = PC2)) +
+  geom_point() +
+  labs(title = "PCA Plot of Your Dataset",
+       x = "Principal Component 1",
+       y = "Principal Component 2")
+summary(pca_result)
+```
+
+The first two principal components explain approximately 43% of the variance in the data. We observe three major clusters of data in regions centered around (0, -3), (1.25, 0), and (1, 1.25). An increase in the value of PC1 is associated with a decrease in the value of PC2 within each of these clusters. We will examine some of the clusters below.
+
+```{r}
+cluster1_indices <- which(pca_result$x[, 1] > -2 & pca_result$x[, 2] < -2.5)
+cluster1_data <- youtube_numeric[cluster1_indices, ]
+summary(cluster1_data)
+cluster2_indices <- which(pca_result$x[, 1] > 0 & pca_result$x[, 2] < 0.75 & pca_result$x[, 2] > -0.75)
+cluster2_data <- youtube_numeric[cluster2_indices, ]
+summary(cluster2_data)
+cluster3_indices <- which(pca_result$x[, 1] < 0 & pca_result$x[, 2] > 0.75 & pca_result$x[, 2] < 1.875)
+cluster3_data <- youtube_numeric[cluster3_indices, ]
+summary(cluster3_data)
+```
+
+Interestingly, we observe that channels appear to cluster by country. Cluster 1 (the one centered around (0, -3) is entirely composed of channels associated with India (although it does not include every channel associated with India). Cluster 2 (the one centered around (1.25, 0)) contains a high number of channels associated with Brazil, while cluster 3 is mostly comprised of channels associated with the United States.
+
+```{r}
+rmarkdown::render("Report.Rmd", output_format = "pdf_document")
+```
