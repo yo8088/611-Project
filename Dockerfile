@@ -7,7 +7,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install additional R libraries
-RUN R -e "install.packages(c('tidyverse', 'ggplot2', 'dplyr'), dependencies=TRUE)"
+RUN R -e "install.packages(c('tidyverse', 'ggplot2', 'rmarkdown'), dependencies=TRUE)"
 
 # Set the working directory
 WORKDIR /home/rstudio
